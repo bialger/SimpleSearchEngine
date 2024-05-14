@@ -16,9 +16,9 @@ struct IntegrationTestSuite : public testing::Test { // special test structure
   void TearDown() override; // method that is called at the end of every test
 
  protected:
-  const std::string kTestDir = "tmp";
+  const std::string kTestDir = "./intergration_tmp";
   Indexer indexer_{kTestDir};
-  Searcher searcher_{indexer_.GetIndex(), 0.5, 0.5};
+  Searcher searcher_{indexer_.GetIndex(), 1.0, 0.75};
 };
 
 #endif //INTEGRATIONTESTSUITE_HPP_

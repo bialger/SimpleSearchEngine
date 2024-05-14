@@ -16,9 +16,11 @@ struct UnitTestSuite : public testing::Test { // special test structure
   void TearDown() override; // method that is called at the end of every test
 
  protected:
-  const std::string kTestDir = "tmp";
+  const std::string kTestDir = "./unit_tmp";
+  Index false_index_{kTestDir};
   Indexer indexer_{kTestDir};
-  Searcher searcher_{indexer_.GetIndex(), 0.5, 0.5};
+  Searcher searcher_{indexer_.GetIndex(), 1.0, 0.75};
+  Searcher searcher2_{false_index_, 1.0, 0.75};
 };
 
 #endif //UNITTESTSUITE_HPP_
