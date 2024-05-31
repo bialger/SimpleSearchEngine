@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iterator>
 #include "lib/argparser/ArgParser.hpp"
 #include "lib/index/Indexer.hpp"
 #include "lib/search/Searcher.hpp"
@@ -7,7 +8,7 @@ int main(int argc, char** argv) {
   std::string program_description = "Program for searching words in most relevant files, version " +
       std::to_string(Index::kMajorVersion_) + "." + std::to_string(Index::kMinorVersion);
   ConditionalOutput output = {std::cerr, true};
-  std::vector<std::string> query;
+  std::vector<std::string> pre_query;
   ArgumentParser::ArgParser parser("SimpleSearchEngine");
   parser.AddCompositeArgument('t', "target", "Target directory to search").
       AddValidate(ArgumentParser::IsValidFilename).AddIsGood([&](std::string& str) -> bool {
@@ -15,7 +16,7 @@ int main(int argc, char** argv) {
     std::string index_name = tmp_index.GetIndexName();
     return ArgumentParser::IsDirectory(str) && ArgumentParser::IsRegularFile(index_name);
   });
-  parser.AddStringArgument('q', "query", "Search query").MultiValue(1).StoreValues(query);
+  parser.AddStringArgument('q', "pre_query", "Search pre_query").MultiValue(1).StoreValues(pre_query);
   parser.AddDoubleArgument('k', "k", "k for BM25 score").Default(1.0);
   parser.AddDoubleArgument('b', "b", "b for BM25 score").Default(0.75);
   parser.AddUnsignedLongLongArgument('n', "number", "Number of most relevant files. Set to 0 to print all").Default(5);
@@ -39,6 +40,13 @@ int main(int argc, char** argv) {
   }
 
   Searcher searcher(index, parser.GetDoubleValue("k"), parser.GetDoubleValue("b"));
+
+  std::vector<std::string> query;
+
+  for (const std::string& arg : pre_query) {
+    std::istringstream iss(arg);
+    query.insert(query.end(), (std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
+  }
 
   try {
     std::vector<std::pair<double, size_t>> result = searcher.SearchMostRelevant(query);
