@@ -6,7 +6,7 @@
 class Indexer {
  public:
   Indexer() = delete;
-  explicit Indexer(const std::string& target);
+  explicit Indexer(const std::string& target, bool index_binary = false);
 
   int32_t CreateIndex();
 
@@ -15,6 +15,7 @@ class Indexer {
  private:
   std::string target_;
   Index index_writer_;
+  bool index_binary_;
 
   void AddFilesRecursive(const std::string& path);
   static bool IsTextFile(const std::string& path);

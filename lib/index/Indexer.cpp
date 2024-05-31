@@ -5,7 +5,8 @@
 
 #include "Indexer.hpp"
 
-Indexer::Indexer(const std::string& target) : target_(target), index_writer_(target) {}
+Indexer::Indexer(const std::string& target, bool index_binary)
+    : target_(target), index_writer_(target), index_binary_(index_binary) {}
 
 int32_t Indexer::CreateIndex() {
   AddFilesRecursive(target_);
@@ -34,7 +35,8 @@ int32_t Indexer::CreateIndex() {
                        }
                      });
       std::istringstream iss(word);
-      std::vector<std::string> new_words((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
+      std::vector<std::string>
+          new_words((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
 
       for (auto& new_word : new_words) {
         ++word_count;
@@ -61,7 +63,7 @@ void Indexer::AddFilesRecursive(const std::string& path) {
     if (std::filesystem::is_directory(entry.path())) {
       AddFilesRecursive(std::filesystem::canonical(entry.path()).string());
     } else {
-      if (IsTextFile(entry.path().string()) && entry.path().filename() != Index::kIndexFile) {
+      if ((index_binary_ || IsTextFile(entry.path().string())) && entry.path().filename() != Index::kIndexFile) {
         index_writer_.AddFile(std::filesystem::canonical(entry.path()).string());
       }
     }
@@ -72,7 +74,7 @@ bool Indexer::IsTextFile(const std::string& path) {
   int c;
   std::ifstream a(path);
 
-  while((c = a.get()) != EOF && c <= 127);
+  while ((c = a.get()) != EOF && c <= 127);
 
   return c == EOF;
 }

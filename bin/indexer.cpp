@@ -9,6 +9,7 @@ int main(int argc, char** argv) {
   ArgumentParser::ArgParser parser("Indexer for SimpleSearchEngine");
   parser.AddCompositeArgument('t', "target", "Target directory to index").
       AddValidate(ArgumentParser::IsValidFilename).AddIsGood(ArgumentParser::IsDirectory);
+  parser.AddFlag('b', "binary", "Index not only ASCII-files");
   parser.AddHelp('h', "help", program_description.c_str());
 
   if (!parser.Parse(argc, argv, output)) {
@@ -21,7 +22,7 @@ int main(int argc, char** argv) {
     return 0;
   }
 
-  Indexer indexer(parser.GetCompositeValue("target"));
+  Indexer indexer(parser.GetCompositeValue("target"), parser.GetFlag("binary"));
 
   if (indexer.CreateIndex() != 0) {
     ArgumentParser::DisplayError("Failed to create index\n", output);
