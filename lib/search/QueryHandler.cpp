@@ -67,9 +67,11 @@ void QueryHandler::Unite(std::unordered_set<size_t>& a, const std::unordered_set
 }
 
 void QueryHandler::Intersect(std::unordered_set<size_t>& a, const std::unordered_set<size_t>& b) {
-  for (auto& index : a) {
-    if (!b.contains(index)) {
-      a.erase(index);
+  for (auto it = a.begin(); it != a.end();) {
+    if (!b.contains(*it)) {
+      it = a.erase(it);
+    } else {
+      ++it;
     }
   }
 }
