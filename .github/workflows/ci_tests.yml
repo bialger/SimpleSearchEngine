@@ -89,7 +89,7 @@ jobs:
             ./SimpleSearchEngineIndexer.exe -t .. && ./SimpleSearchEngine.exe -t .. -q "Cmake AND GTest"
           else 
             cd bin
-            ./SimpleSearchEngineIndexer.exe -t .. && ./SimpleSearchEngine.exe -t .. -q "Cmake AND GTest"
+            ./SimpleSearchEngineIndexer -t .. && ./SimpleSearchEngine -t .. -q "Cmake AND GTest"
           fi
 
       - name: Run tests
