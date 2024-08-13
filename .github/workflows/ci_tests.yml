@@ -1,0 +1,127 @@
+name: "CI tests"
+
+on: [ push ]
+
+jobs:
+  build-mingw:
+    name: Tests and application run on Windows Latest MinGW
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create CMake cache
+        run: |
+          cmake -S . -B cmake-build-release -DCMAKE_BUILD_TYPE=Release -G "Unix Makefiles"
+          cmake -S . -B cmake-build-debug -DCMAKE_BUILD_TYPE=Debug -G "Unix Makefiles"
+
+      - name: Build main target
+        shell: bash
+        run: |
+          cmake --build cmake-build-release --target SimpleSearchEngine || echo Built with errors
+          cmake --build cmake-build-release --target SimpleSearchEngineIndexer || echo Built with errors
+
+      - name: Build tests target
+        shell: bash
+        run: |
+          cmake --build cmake-build-debug --target SimpleSearchEngine_tests || echo Built with errors
+
+      - name: Run program
+        working-directory: .\cmake-build-release\bin
+        run: |
+          .\SimpleSearchEngineIndexer.exe -t .. && .\SimpleSearchEngine.exe -t .. -q "Cmake AND GTest"
+
+      - name: Run tests
+        working-directory: .\cmake-build-debug\tests
+        run: |
+          echo "Currently unable to run tests on Windows Latest MinGW. See https://gitmemories.com/cristianadam/HelloWorld/issues/12 and https://github.com/microsoft/vscode-cmake-tools/issues/2451"
+          % .\SimpleSearchEngine_tests.exe
+
+  build-matrix:
+    name: Tests and application run on ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {
+            name: "Windows Latest MSVC", artifact: "Windows-MSVC.tar.xz",
+            os: windows-latest,
+            build_type: "Release", cc: "cl", cxx: "cl",
+            environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
+          }
+          - {
+            name: "Ubuntu Latest GCC", artifact: "Linux.tar.xz",
+            os: ubuntu-latest,
+            build_type: "Release", cc: "gcc", cxx: "g++"
+          }
+          - {
+            name: "macOS Latest Clang", artifact: "macOS.tar.xz",
+            os: macos-latest,
+            build_type: "Release", cc: "clang", cxx: "clang++"
+          }
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create CMake cache
+        shell: bash
+        run: |
+          cmake -S . -B cmake-build-release -DCMAKE_BUILD_TYPE=Release
+          cmake -S . -B cmake-build-debug -DCMAKE_BUILD_TYPE=Debug
+
+      - name: Build main target
+        shell: bash
+        run: |
+          cmake --build cmake-build-release --target SimpleSearchEngine || echo "Built with errors"
+          cmake --build cmake-build-release --target SimpleSearchEngineIndexer || echo Built with errors
+
+      - name: Build tests target
+        shell: bash
+        run: |
+          cmake --build cmake-build-debug --target SimpleSearchEngine_tests || echo "Built with errors"
+
+      - name: Run program
+        shell: bash
+        working-directory: ./cmake-build-release/bin
+        run: |
+          if [ "$RUNNER_OS" == "Windows" ]; then
+            cd Debug
+            ./SimpleSearchEngineIndexer.exe -t .. && ./SimpleSearchEngine.exe -t .. -q "Cmake"
+          else
+            ./SimpleSearchEngineIndexer -t .. && ./SimpleSearchEngine -t .. -q "Cmake AND GTest"
+          fi
+
+      - name: Run tests
+        shell: bash
+        working-directory: ./cmake-build-debug/tests
+        run: |
+          if [ "$RUNNER_OS" == "Windows" ]; then
+            cd Debug
+            ./SimpleSearchEngine_tests.exe
+          else
+            ./SimpleSearchEngine_tests
+          fi
+
+  memory-leaks:
+    name: Find memory leaks in tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install valgrind
+        run: |
+          sudo apt-get update && sudo apt-get -y install valgrind
+
+      - name: Create CMake cache
+        run: |
+          cmake -S . -B cmake-build -DCMAKE_BUILD_TYPE=Debug
+
+      - name: Build tests target
+        run: |
+          cmake --build cmake-build --target SimpleSearchEngine_tests
+
+      - name: Run valgrind
+        working-directory: ./cmake-build/tests
+        run: |
+          valgrind --leak-check=full --track-origins=yes --error-exitcode=1 ./SimpleSearchEngine_tests
