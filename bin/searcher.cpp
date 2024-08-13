@@ -7,7 +7,7 @@
 int main(int argc, char** argv) {
   std::string program_description = "Program for searching words in most relevant files, version " +
       std::to_string(Index::kMajorVersion_) + "." + std::to_string(Index::kMinorVersion);
-  ConditionalOutput output = {std::cerr, true};
+  ArgumentParser::ConditionalOutput output = {std::cerr, true};
   std::vector<std::string> pre_query;
   ArgumentParser::ArgParser parser("SimpleSearchEngine");
   parser.AddCompositeArgument('t', "target", "Target directory to search. It should be already indexed").

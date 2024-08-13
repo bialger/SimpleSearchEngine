@@ -5,7 +5,7 @@
 int main(int argc, char** argv) {
   std::string program_description = "Program for indexing files in directory, version " +
       std::to_string(Index::kMajorVersion_) + "." + std::to_string(Index::kMinorVersion);
-  ConditionalOutput output = {std::cerr, true};
+  ArgumentParser::ConditionalOutput output = {std::cerr, true};
   ArgumentParser::ArgParser parser("Indexer for SimpleSearchEngine");
   parser.AddCompositeArgument('t', "target", "Target directory to index").
       AddValidate(ArgumentParser::IsValidFilename).AddIsGood(ArgumentParser::IsDirectory);
