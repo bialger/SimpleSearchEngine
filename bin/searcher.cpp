@@ -10,13 +10,13 @@ int main(int argc, char** argv) {
   ConditionalOutput output = {std::cerr, true};
   std::vector<std::string> pre_query;
   ArgumentParser::ArgParser parser("SimpleSearchEngine");
-  parser.AddCompositeArgument('t', "target", "Target directory to search").
+  parser.AddCompositeArgument('t', "target", "Target directory to search. It should be already indexed").
       AddValidate(ArgumentParser::IsValidFilename).AddIsGood([&](std::string& str) -> bool {
     Index tmp_index(str);
     std::string index_name = tmp_index.GetIndexName();
     return ArgumentParser::IsDirectory(str) && ArgumentParser::IsRegularFile(index_name);
   });
-  parser.AddStringArgument('q', "pre_query", "Search pre_query").MultiValue(1).StoreValues(pre_query);
+  parser.AddStringArgument('q', "query", "Search query").MultiValue(1).StoreValues(pre_query);
   parser.AddDoubleArgument('k', "k", "k for BM25 score").Default(1.0);
   parser.AddDoubleArgument('b', "b", "b for BM25 score").Default(0.75);
   parser.AddUnsignedLongLongArgument('n', "number", "Number of most relevant files. Set to 0 to print all").Default(5);
