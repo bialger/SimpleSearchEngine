@@ -2,6 +2,7 @@
 #include <sstream>
 #include <random>
 #include <limits>
+#include <filesystem>
 
 #include "test_functions.hpp"
 
@@ -9,6 +10,12 @@ std::vector<std::string> SplitString(const std::string& str) {
   std::istringstream iss(str);
 
   return {std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>()};
+}
+
+std::string ExtractFilename(const std::vector<std::pair<std::string, size_t>>& index,
+                                     const std::pair<double, size_t>& result) {
+  std::filesystem::path p(index[result.second].first);
+  return p.filename().string();
 }
 
 std::vector<int32_t> GetRandomNumbers(size_t n) {
