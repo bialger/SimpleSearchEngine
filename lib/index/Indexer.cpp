@@ -2,6 +2,7 @@
 #include <fstream>
 #include <algorithm>
 #include <iterator>
+#include <sstream>
 
 #include "Indexer.hpp"
 
