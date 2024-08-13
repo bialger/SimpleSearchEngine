@@ -87,7 +87,7 @@ jobs:
         run: |
           if [ "$RUNNER_OS" == "Windows" ]; then
             cd Debug
-            ./SimpleSearchEngineIndexer.exe -t .. && ./SimpleSearchEngine.exe -t .. -q "Cmake AND GTest"
+            ./SimpleSearchEngineIndexer.exe -t ../.. && ./SimpleSearchEngine.exe -t ../.. -q "Cmake AND GTest"
           else
             ./SimpleSearchEngineIndexer -t .. && ./SimpleSearchEngine -t .. -q "Cmake AND GTest"
           fi
