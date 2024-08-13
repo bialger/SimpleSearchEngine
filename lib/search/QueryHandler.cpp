@@ -100,6 +100,11 @@ std::unordered_set<size_t> QueryHandler::ParseQuery(std::string::iterator first,
 
       operation = Operation::kAnd;
       it += 3;
+
+      if (it == last) {
+        throw std::logic_error("Invalid query: no second term after AND");
+      }
+
       continue;
     }
 
@@ -110,6 +115,11 @@ std::unordered_set<size_t> QueryHandler::ParseQuery(std::string::iterator first,
 
       operation = Operation::kOr;
       it += 2;
+
+      if (it == last) {
+        throw std::logic_error("Invalid query: no second term after OR");
+      }
+
       continue;
     }
 
