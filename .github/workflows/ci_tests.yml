@@ -27,12 +27,12 @@ jobs:
           cmake --build cmake-build-debug --target SimpleSearchEngine_tests || echo Built with errors
 
       - name: Run program
-        working-directory: .\cmake-build-release
+        working-directory: .\cmake-build-release\bin
         run: |
           .\SimpleSearchEngineIndexer.exe -t .. && .\SimpleSearchEngine.exe -t .. -q "Cmake AND GTest"
 
       - name: Run tests
-        working-directory: .\cmake-build-debug
+        working-directory: .\cmake-build-debug\tests
         run: |
           echo "Currently unable to run tests on Windows Latest MinGW. See https://gitmemories.com/cristianadam/HelloWorld/issues/12 and https://github.com/microsoft/vscode-cmake-tools/issues/2451"
           % .\SimpleSearchEngine_tests.exe
@@ -83,9 +83,10 @@ jobs:
 
       - name: Run program
         shell: bash
-        working-directory: ./cmake-build-release
+        working-directory: ./cmake-build-release/bin
         run: |
           if [ "$RUNNER_OS" == "Windows" ]; then
+            cd Debug
             ./SimpleSearchEngineIndexer.exe -t .. && ./SimpleSearchEngine.exe -t .. -q "Cmake AND GTest"
           else 
             cd bin
@@ -94,9 +95,10 @@ jobs:
 
       - name: Run tests
         shell: bash
-        working-directory: ./cmake-build-debug
+        working-directory: ./cmake-build-debug/tests
         run: |
           if [ "$RUNNER_OS" == "Windows" ]; then
+            cd Debug
             ./SimpleSearchEngine_tests.exe
           else
             cd tests
