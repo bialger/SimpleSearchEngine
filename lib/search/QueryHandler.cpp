@@ -93,7 +93,7 @@ std::unordered_set<size_t> QueryHandler::ParseQuery(std::string::iterator first,
       continue;
     }
 
-    if (*it == 'A') {
+    if (*it == 'A' && it + 1 != last && *(it + 1) == 'N' && it + 2 != last && *(it + 2) == 'D') {
       if (operation != Operation::kNoOperation) {
         throw std::logic_error("Invalid query: to many operators");
       }
@@ -103,7 +103,7 @@ std::unordered_set<size_t> QueryHandler::ParseQuery(std::string::iterator first,
       continue;
     }
 
-    if (*it == 'O') {
+    if (*it == 'O' && it + 1 != last && *(it + 1) == 'R') {
       if (operation != Operation::kNoOperation) {
         throw std::logic_error("Invalid query: to many operators");
       }
@@ -126,7 +126,7 @@ std::unordered_set<size_t> QueryHandler::ParseQuery(std::string::iterator first,
       terms_.insert(term);
 
       if (!postings_.contains(term)) {
-        throw std::logic_error("Invalid term: " + term);
+        throw std::logic_error("No such term: " + term);
       }
 
       if (is_ready) {
